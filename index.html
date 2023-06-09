@@ -48,15 +48,17 @@
       runningPlanElement.select();
       document.execCommand("copy");
 
-      alert("🦀クラブコピー🦀");
+      alert("🦀Crab Copy🦀\n\n"+ runningPlanElement.value);
     }
 
   </script>
 </head>
-<body>
+<body background="crab.png">
+  <center>
   <h2>カニUtil</h2>
-  <button onclick="copyRunningPlan(1)" style="width: 100%; height: 150px;">コピー</button>
-  <textarea id="running-plan1" readonly style="width: 100%; height: 400px;"></textarea>
+  <button onclick="copyRunningPlan(1)" style="width: 70%; height: 150px; font-size:3em;">Crab Copy</button>
+  <textarea id="running-plan1" readonly style="width: 70%; height: 400px;"></textarea>
   <br>
+  </center>
 </body>
 </html>
