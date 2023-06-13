@@ -8,6 +8,23 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link href="css/index.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-image: url('crab.png');
+      background-repeat: repeat; /* 横方向に繰り返す */
+      animation: scrollBackground 20s linear infinite; /* アニメーションを設定 */
+      transform: rotate;
+    }
+    @keyframes scrollBackground {
+      0% {
+        background-position: 0 0; /* 初期位置 */
+      }
+      100% {
+        background-position: 100% 200%; /* 終了位置 */
+      }
+    }
+  </style>
  
   <title>カニUtil</title>
   <script>
@@ -50,14 +67,35 @@
       alert("🦀下記をCrab Copyしたｶﾆ🦀\n\n--------\n"+ runningPlanElement.value);
     }
 
+    function shiftMonth() {
+      var now = new Date();
+      var currentYear = now.getFullYear();
+      var currentMonth = now.getMonth();
+      var nextMonth = (currentMonth + 1) % 12; // 来月のインデックス
+
+      var firstDayOfNextMonth = new Date(currentYear, nextMonth, 1);
+      var firstWednesdayOfNextMonth = new Date(currentYear, nextMonth, 1 + ((3 - firstDayOfNextMonth.getDay() + 7) % 7));
+      var secondWednesdayOfNextMonth = new Date(currentYear, nextMonth, firstWednesdayOfNextMonth.getDate() + 7);
+
+      var options = { weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric' };
+      var formattedDateNextMonth = secondWednesdayOfNextMonth.toLocaleDateString('ja-JP', options);
+
+      var prefix = "次のランニングは\n";
+      var suffix = " です🏃\n\n19:40 代々木公園集合⛲\n19:45 Run開始💨\n20:45 Run終了🍺\n\n下記リアクションで\n参加表明お願いします🙇\n❤️：参加\n😮：不参加(調整中）\n😢：不参加";
+      var runningPlan1Element = document.getElementById("running-plan1");
+      runningPlan1Element.value = prefix + formattedDateNextMonth + suffix;
+    }
+
   </script>
 </head>
-<body background="crab.png">
+<body >
   <center>
   <h2>カニUtil</h2>
   <button onclick="copyRunningPlan(1)" style="width: 70%; height: 150px; font-size:3em;">Crab Copy</button>
   <textarea id="running-plan1" readonly style="width: 70%; height: 400px;"></textarea>
   <br>
+  <button onclick="shiftMonth()" style="width: 70%; height: 150px; font-size:3em;">来月にずらして表示</button>
+
   </center>
 </body>
 </html>
