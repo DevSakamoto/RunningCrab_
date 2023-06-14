@@ -24,66 +24,78 @@
         background-position: 100% 200%; /* 終了位置 */
       }
     }
+
+    .button-effect {
+      animation: buttonEffect 0.3s ease-in-out;
+    }
+    
+    @keyframes buttonEffect {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
   </style>
  
   <title>カニUtil</title>
   <script>
+    var offset = 0;
+
     window.onload = function () {
-      generateRunningPlan();
+      generateRunningPlan(offset);
     };
-    function generateRunningPlan() {
+    
+    function generateRunningPlan(add) {
+      offset += add;
       var now = new Date();
       var currentYear = now.getFullYear();
       var currentMonth = now.getMonth();
-      var nextMonth = (currentMonth + 1) % 12; // 来月のインデックス
+      var targetMonth = (currentMonth + offset + 12) % 12; // ターゲットの月のインデックス
 
-      var firstDayOfCurrentMonth = new Date(currentYear, currentMonth, 1);
-      var firstWednesdayOfCurrentMonth = new Date(currentYear, currentMonth, 1 + ((3 - firstDayOfCurrentMonth.getDay() + 7) % 7));
-      var secondWednesdayOfCurrentMonth = new Date(currentYear, currentMonth, firstWednesdayOfCurrentMonth.getDate() + 7);
-
-      var firstDayOfNextMonth = new Date(currentYear, nextMonth, 1);
-      var firstWednesdayOfNextMonth = new Date(currentYear, nextMonth, 1 + ((3 - firstDayOfNextMonth.getDay() + 7) % 7));
-      var secondWednesdayOfNextMonth = new Date(currentYear, nextMonth, firstWednesdayOfNextMonth.getDate() + 7);
+      var firstDayOfTargetMonth = new Date(currentYear, targetMonth, 1);
+      var firstWednesdayOfTargetMonth = new Date(currentYear, targetMonth, 1 + ((3 - firstDayOfTargetMonth.getDay() + 7) % 7));
+      var secondWednesdayOfTargetMonth = new Date(currentYear, targetMonth, firstWednesdayOfTargetMonth.getDate() + 7);
 
       var options = { weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric' };
-      var formattedDateCurrentMonth = secondWednesdayOfCurrentMonth.toLocaleDateString('ja-JP', options);
-      var formattedDateNextMonth = secondWednesdayOfNextMonth.toLocaleDateString('ja-JP', options);
+      var formattedDateTargetMonth = secondWednesdayOfTargetMonth.toLocaleDateString('ja-JP', options);
 
       var prefix = "次のランニングは\n";
-      var suffix = " です🏃\n\n19:40 代々木公園集合⛲\n19:45 Run開始💨\n20:45 Run終了🍺\n\n下記リアクションで\n参加表明お願いします🙇\n❤️：参加\n😮：不参加(調整中）\n😢：不参加"
+      var suffix = " です🏃\n\n19:40 代々木公園集合⛲\n19:45 Run開始💨\n20:45 Run終了🍺\n\n下記リアクションで\n参加表明お願いします🙇\n❤️：参加\n😮：不参加(調整中）\n😢：不参加";
       var runningPlan1Element = document.getElementById("running-plan1");
-      if(now > secondWednesdayOfNextMonth){
-        //今月の第二水曜日を過ぎていたら来月を表示
-        runningPlan1Element.value = prefix + formattedDateNextMonth + suffix;
-      }else{
-        runningPlan1Element.value = prefix + formattedDateCurrentMonth + suffix;
+      runningPlan1Element.value = prefix + formattedDateTargetMonth + suffix;
+      var messageElement = document.getElementById("message");
+
+      messageElement.textContent = getMessageText(offset)
+
+    }
+
+    function getMessageText(offset) {
+      if (offset === 1) {
+        return "1ヶ月後のランニング情報が生成されました。";
+      } else if (offset === -1) {
+        return "1ヶ月前のランニング情報が生成されました。";
       }
+      return "";
     }
 
     function copyRunningPlan(i) {
       var runningPlanElement = document.getElementById("running-plan" + i);
       runningPlanElement.select();
       document.execCommand("copy");
-      alert("🦀下記をCrab Copyしたｶﾆ🦀\n\n--------\n"+ runningPlanElement.value);
+      
+      alert("🦀下記をCrab Copyしたｶﾆ🦀\n\n--------\n" + runningPlanElement.value);
     }
 
-    function shiftMonth() {
-      var now = new Date();
-      var currentYear = now.getFullYear();
-      var currentMonth = now.getMonth();
-      var nextMonth = (currentMonth + 1) % 12; // 来月のインデックス
-
-      var firstDayOfNextMonth = new Date(currentYear, nextMonth, 1);
-      var firstWednesdayOfNextMonth = new Date(currentYear, nextMonth, 1 + ((3 - firstDayOfNextMonth.getDay() + 7) % 7));
-      var secondWednesdayOfNextMonth = new Date(currentYear, nextMonth, firstWednesdayOfNextMonth.getDate() + 7);
-
-      var options = { weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric' };
-      var formattedDateNextMonth = secondWednesdayOfNextMonth.toLocaleDateString('ja-JP', options);
-
-      var prefix = "次のランニングは\n";
-      var suffix = " です🏃\n\n19:40 代々木公園集合⛲\n19:45 Run開始💨\n20:45 Run終了🍺\n\n下記リアクションで\n参加表明お願いします🙇\n❤️：参加\n😮：不参加(調整中）\n😢：不参加";
-      var runningPlan1Element = document.getElementById("running-plan1");
-      runningPlan1Element.value = prefix + formattedDateNextMonth + suffix;
+    function buttonClickEffect(button) {
+      button.classList.add("button-effect");
+      setTimeout(function() {
+        button.classList.remove("button-effect");
+      }, 300);
     }
 
   </script>
@@ -91,10 +103,11 @@
 <body >
   <center>
   <h2>カニUtil</h2>
-  <button onclick="copyRunningPlan(1)" style="width: 70%; height: 150px; font-size:3em;">Crab Copy</button>
-  <textarea id="running-plan1" readonly style="width: 70%; height: 400px;"></textarea>
+  <button onclick="buttonClickEffect(this);copyRunningPlan(1);" style="width: 80%; height: 150px; font-size:3em;">Crab Copy</button>
+  <textarea id="running-plan1" readonly style="width: 80%; height: 400px;"></textarea>
   <br>
-  <button onclick="shiftMonth()" style="width: 70%; height: 150px; font-size:2em;">来月にずらして表示</button>
+  <button onclick="buttonClickEffect(this);generateRunningPlan(-1);" style="width: 40%; height: 150px; font-size:1.5em;">1ヶ月前</button>
+  <button onclick="buttonClickEffect(this);generateRunningPlan(1);" style="width: 40%; height: 150px; font-size:1.5em;">1ヶ月後</button>
 
   </center>
 </body>
