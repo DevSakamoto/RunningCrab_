@@ -8,70 +8,86 @@
     // ChatWork APIのエンドポイント
     const endpoint = "https://api.chatwork.com/v2";
 
+    // ローカルストレージからAPIキーを取得する
+    function getApiKey() {
+      return localStorage.getItem("api_key");
+    }
+
+    // ローカルストレージにAPIキーを保存する
+    function setApiKey(apiKey) {
+      localStorage.setItem("api_key", apiKey);
+    }
+
     // メッセージの送信
-    function sendMessage() {
-      const roomId = $("#room_id").val();
-      const message = $("#message").val();
-      const apiKey = $("#api_key").val();
+      function sendMessage() {
+        const roomId = $("#room_id").val();
+        const message = $("#message").val();
+        const apiKey = getApiKey();
 
-      $.ajax({
-        url: `${endpoint}/rooms/${roomId}/messages`,
-        type: "POST",
-        headers: {
-          "X-ChatWorkToken": apiKey
-        },
-        data: {
-          body: message
-        },
-        success: function (response) {
-          console.log("メッセージが送信されました。");
-        },
-        error: function (error) {
-          console.error("メッセージの送信に失敗しました。", error);
-        }
-      });
-    }
+        $.ajax({
+          url: `${endpoint}/rooms/${roomId}/messages`,
+          type: "POST",
+          headers: {
+            "X-ChatWorkToken": apiKey,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type"
+          },
+          data: {
+            body: message
+          },
+          success: function (response) {
+            console.log("メッセージが送信されました。");
+          },
+          error: function (error) {
+            console.error("メッセージの送信に失敗しました。", error);
+          }
+        });
+      }
 
-    // メッセージの取得
-    function getMessages() {
-      const roomId = $("#room_id").val();
-      const apiKey = $("#api_key").val();
+      // メッセージの取得
+      function getMessages() {
+        const roomId = $("#room_id").val();
+        const apiKey = getApiKey();
 
-      $.ajax({
-        url: `${endpoint}/rooms/${roomId}/messages`,
-        type: "GET",
-        headers: {
-          "X-ChatWorkToken": apiKey
-        },
-        success: function (response) {
-          console.log("メッセージの取得に成功しました。", response);
-          displayMessages(response);
-        },
-        error: function (error) {
-          console.error("メッセージの取得に失敗しました。", error);
-        }
-      });
-    }
+        $.ajax({
+          url: `${endpoint}/rooms/${roomId}/messages`,
+          type: "GET",
+          headers: {
+            "X-ChatWorkToken": apiKey,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type"
+          },
+          success: function (response) {
+            console.log("メッセージの取得に成功しました。", response);
+            displayMessages(response);
+          },
+          error: function (error) {
+            console.error("メッセージの取得に失敗しました。", error);
+          }
+        });
+      }
 
-    // メッセージの削除
-    function deleteMessage(messageId) {
-      const apiKey = $("#api_key").val();
+      // メッセージの削除
+      function deleteMessage(messageId) {
+        const apiKey = getApiKey();
 
-      $.ajax({
-        url: `${endpoint}/messages/${messageId}`,
-        type: "DELETE",
-        headers: {
-          "X-ChatWorkToken": apiKey
-        },
-        success: function (response) {
-          console.log("メッセージが削除されました。");
-          getMessages(); // メッセージが削除された後にメッセージを再取得する
-        },
-        error: function (error) {
-          console.error("メッセージの削除に失敗しました。", error);
-        }
-      });
-    }
+        $.ajax({
+          url: `${endpoint}/messages/${messageId}`,
+          type: "DELETE",
+          headers: {
+            "X-ChatWorkToken": apiKey,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type"
+          },
+          success: function (response) {
+            console.log("メッセージが削除されました。");
+            getMessages(); // メッセージが削除された後にメッセージを再取得する
+          },
+          error: function (error) {
+            console.error("メッセージの削除に失敗しました。", error);
+          }
+        });
+      }
 
     // メッセージの表示
     function displayMessages(messages) {
@@ -94,6 +110,21 @@
       table.append(tableHeader, tableBody);
       $("#messages_table").empty().append(table);
     }
+
+    // ページ読み込み時の処理
+    $(document).ready(function () {
+      // ローカルストレージからAPIキーを取得して入力欄に設定する
+      const apiKey = getApiKey();
+      if (apiKey) {
+        $("#api_key").val(apiKey);
+      }
+
+      // APIキーの入力欄が変更された時にローカルストレージに保存する
+      $("#api_key").on("input", function () {
+        const apiKey = $(this).val();
+        setApiKey(apiKey);
+      });
+    });
   </script>
 </head>
 
