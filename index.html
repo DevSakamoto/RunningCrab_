@@ -52,7 +52,7 @@
       var prefix = "次のランニングは\n";
       var suffix = " です🏃\n\n19:40 代々木公園集合⛲\n19:45 Run開始💨\n20:45 Run終了🍺\n\n下記リアクションで\n参加表明お願いします🙇\n❤️：参加\n😮：不参加(調整中）\n😢：不参加"
       var runningPlan1Element = document.getElementById("running-plan1");
-      if(now > secondWednesdayOfNextMonth){
+      if(now >＝ secondWednesdayOfNextMonth){
         //今月の第二水曜日を過ぎていたら来月を表示
         runningPlan1Element.value = prefix + formattedDateNextMonth + suffix;
       }else{
