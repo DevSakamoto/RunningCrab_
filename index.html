@@ -98,16 +98,26 @@
       }, 300);
     }
 
+    function vibrateDevice(ms) {
+      // Vibration APIがサポートされているかを確認
+      if ("vibrate" in navigator) {
+        // 1000ミリ秒（1秒間）の振動パターンを実行
+        navigator.vibrate(ms);
+      } else {
+        console.log("このブラウザはVibration APIをサポートしていません。");
+      }
+    }
+
   </script>
 </head>
 <body >
   <center>
   <h2>カニUtil</h2>
-  <button onclick="buttonClickEffect(this);copyRunningPlan(1);" style="width: 80%; height: 150px; font-size:3em;">Crab Copy</button>
+  <button onclick="buttonClickEffect(this);copyRunningPlan(1);vibrateDevice(300);" style="width: 80%; height: 150px; font-size:3em;">Crab Copy</button>
   <textarea id="running-plan1" readonly style="width: 80%; height: 400px;"></textarea>
   <br>
-  <button onclick="buttonClickEffect(this);generateRunningPlan(-1);" style="width: 40%; height: 150px; font-size:1.5em;">1ヶ月前</button>
-  <button onclick="buttonClickEffect(this);generateRunningPlan(1);" style="width: 40%; height: 150px; font-size:1.5em;">1ヶ月後</button>
+  <button onclick="buttonClickEffect(this);generateRunningPlan(-1);vibrateDevice(100);" style="width: 40%; height: 150px; font-size:1.5em;">1ヶ月前</button>
+  <button onclick="buttonClickEffect(this);generateRunningPlan(1);vibrateDevice(100);" style="width: 40%; height: 150px; font-size:1.5em;">1ヶ月後</button>
 
   </center>
 </body>
