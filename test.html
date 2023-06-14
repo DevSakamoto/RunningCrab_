@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>ChatWork API Test</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // ChatWork APIのエンドポイント
+    const endpoint = "https://api.chatwork.com/v2";
+
+    // メッセージの送信
+    function sendMessage() {
+      const roomId = $("#room_id").val();
+      const message = $("#message").val();
+      const apiKey = $("#api_key").val();
+
+      $.ajax({
+        url: `${endpoint}/rooms/${roomId}/messages`,
+        type: "POST",
+        headers: {
+          "X-ChatWorkToken": apiKey
+        },
+        data: {
+          body: message
+        },
+        success: function (response) {
+          console.log("メッセージが送信されました。");
+        },
+        error: function (error) {
+          console.error("メッセージの送信に失敗しました。", error);
+        }
+      });
+    }
+
+    // メッセージの取得
+    function getMessages() {
+      const roomId = $("#room_id").val();
+      const apiKey = $("#api_key").val();
+
+      $.ajax({
+        url: `${endpoint}/rooms/${roomId}/messages`,
+        type: "GET",
+        headers: {
+          "X-ChatWorkToken": apiKey
+        },
+        success: function (response) {
+          console.log("メッセージの取得に成功しました。", response);
+          displayMessages(response);
+        },
+        error: function (error) {
+          console.error("メッセージの取得に失敗しました。", error);
+        }
+      });
+    }
+
+    // メッセージの削除
+    function deleteMessage(messageId) {
+      const apiKey = $("#api_key").val();
+
+      $.ajax({
+        url: `${endpoint}/messages/${messageId}`,
+        type: "DELETE",
+        headers: {
+          "X-ChatWorkToken": apiKey
+        },
+        success: function (response) {
+          console.log("メッセージが削除されました。");
+          getMessages(); // メッセージが削除された後にメッセージを再取得する
+        },
+        error: function (error) {
+          console.error("メッセージの削除に失敗しました。", error);
+        }
+      });
+    }
+
+    // メッセージの表示
+    function displayMessages(messages) {
+      const table = $("<table>");
+      const tableHeader = $("<thead>").append("<tr><th>Message ID</th><th>Body</th><th></th></tr>");
+      const tableBody = $("<tbody>");
+
+      messages.forEach(function (message) {
+        const deleteButton = $("<button>")
+          .text("削除")
+          .click(function () {
+            deleteMessage(message.message_id);
+          });
+
+        const row = $("<tr>").append(`<td>${message.message_id}</td><td>${message.body}</td><td></td>`);
+        row.find("td:last").append(deleteButton);
+        tableBody.append(row);
+      });
+
+      table.append(tableHeader, tableBody);
+      $("#messages_table").empty().append(table);
+    }
+  </script>
+</head>
+
+<body>
+  <h1>ChatWork API Test</h1>
+  <label for="room_id">Room ID:</label>
+  <input type="text" id="room_id" placeholder="Room ID">
+  <br>
+  <label for="message">Message:</label>
+  <input type="text" id="message" placeholder="Message">
+  <br>
+  <label for="api_key">API Key:</label>
+  <input type="text" id="api_key" placeholder="API Key">
+  <br>
+  <button onclick="sendMessage()">Send Message</button>
+  <button onclick="getMessages()">Get Messages</button>
+  <br>
+  <h2>Messages:</h2>
+  <div id="messages_table"></div>
+</body>
+
+</html>
